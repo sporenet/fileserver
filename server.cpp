@@ -8,9 +8,7 @@
 #include "file.hpp"
 #include <arpa/inet.h>
 #include <netinet/in.h>
-#include <ppl.h>
 
-using namespace concurrency;
 
 int main(int argc, char *argv[]) {
     if (argc != 2) {
@@ -45,7 +43,7 @@ int main(int argc, char *argv[]) {
     while (1) {
         int count = epoll_wait(efd, events, EPOLL_SIZE, -1);
 
-        parallel_for(0, count, [&](int i) {
+        for (int i = 0 ; i < count ; ++i) {
             if (events[i].data.fd == sock) {
                 struct sockaddr_in caddr = {0, };
                 socklen_t clen = sizeof(caddr);
@@ -86,7 +84,7 @@ int main(int argc, char *argv[]) {
                 }
 
             }
-        });
+        }
     }
 
     close(sock);
