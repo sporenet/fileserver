@@ -15,6 +15,7 @@ int main(int argc, char **argv) {
     socklen_t clen;
     int csock;
     int req;    // 0 for upload, 1 for download
+    char op[8];
     char file_name[256];
     struct sockaddr_in caddr;
 
@@ -29,35 +30,37 @@ int main(int argc, char **argv) {
         exit(0);
     }
 
-    // send filename
-    scanf("%s", file_name);
-    while (strcmp(file_name, "quit")) {
-
-        write(csock, file_name, sizeof(file_name));
-
+    // (up|down) filename
+    while (true) {
         FILE *file = NULL;
-
-        if (0) {
-            // Download from server
-            req = 1;
-            write(csock, &req, sizeof(req));
-            file = fopen(file_name, "wb");
-            recv_file(csock, file);
-        } else {
-            // Upload to server
+        int req;
+        
+        scanf("%s", op);
+        
+        if (!strcmp(op, "quit")) {
+            cout << "Goodbye!" << endl;
+            close(csock);
+            return 0;
+        } else if (!strcmp(op, "up")) {
+            scanf("%s", file_name);
+            write(csock, file_name, sizeof(file_name));
             req = 0;
             write(csock, &req, sizeof(req));
             file = fopen(file_name, "rb");
             send_file(csock, file);
+            fclose(file);
+        } else if (!strcmp(op, "down")) {
+            scanf("%s", file_name);
+            write(csock, file_name, sizeof(file_name));
+            req = 1;
+            write(csock, &req, sizeof(req));
+            file = fopen(file_name, "wb");
+            recv_file(csock, file);
+            fclose(file);
+        } else {
+            cout << "Please enter a valid command" << endl;
+            continue;
         }
-
-        fclose(file);
-        scanf("%s", file_name);
     }
-
-    cout << "Goodbye!" << endl;
-    close(csock);
-
-    return 0;
 }
 

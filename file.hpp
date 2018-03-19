@@ -7,8 +7,9 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <stdlib.h>
+#include <vector>
 
-#define BUF_SIZE 4096 
+#define BUF_SIZE 4096
 
 using namespace std;
 
